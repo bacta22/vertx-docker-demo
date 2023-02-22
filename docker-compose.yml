@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+
+  app:
+    build:
+      dockerfile: Dockerfile
+    working_dir: /usr/app
+    depends_on:
+      - db
+    networks:
+      - photos
+    ports:
+      - "8888:8888"
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./db/data_dump-2023_02_15-recent_flipping_table.sql:/docker-entrypoint-initdb.d/data_dump-2023_02_15-recent_flipping_table.sql
+      - ./db/data_dump-2023_02_15-user_profile_table.sql:/docker-entrypoint-initdb.d/data_dump-2023_02_15-user_profile_table.sql
+    environment:
+      - POSTGRES_USER=deodd
+      - POSTGRES_PASSWORD=deodd12345678
+      - POSTGRES_DB=deodd
+    ports:
+      - "5235:5432"
+    networks:
+      - photos
+
+volumes:
+  postgres_data:
+
+networks:
+  photos:
+    driver: bridge
